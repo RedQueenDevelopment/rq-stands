@@ -1,0 +1,48 @@
+local QBCore = exports['qb-core']:GetCoreObject() 
+
+--- Create DO NOT TOUCH UNLESS YOU KNOW WHAT YOURE DOING
+CreateThread(function()
+    for i,standType in pairs(Config.Stands) do
+        
+        local options = {}
+        for j, item in pairs(standType.inventory) do
+            if QBCore.Shared.Items[item.name] then
+                local price = Config.DefaultPrice
+                if item.price then
+                    price = item.price
+                end
+                options[#options+1] = {
+                    type = 'client',
+                    icon = "fas fa-cash-register",
+                    label = QBCore.Shared.Items[item.name].label.. ' $' ..price,
+                    event = 'rq-stands:client:buy',
+                    params = {
+                        item = item
+                    }
+                }
+            else
+                print(item.name.. " seems to be missing from your items.lua")
+            end
+        end
+        exports['qb-target']:AddTargetModel(standType.props, {
+            options = options,
+            distance = 2.0
+        })
+    end
+end)
+
+RegisterNetEvent('rq-stands:client:buy', function(data)
+    local item = data.params.item
+    TriggerEvent('animations:client:EmoteCommandStart', {"id"})
+    TriggerServerEvent('rq-stands:server:attemptPurchase', item) 
+end)
+
+RegisterNetEvent('rq-stands:client:success', function(item)
+    QBCore.Functions.Notify('You bought a '..QBCore.Shared.Items[item.name].label, 'success')
+end)
+
+RegisterNetEvent('rq-stands:client:failed', function()
+    TriggerEvent('animations:client:EmoteCommandStart', {"damn"})
+    QBCore.Functions.Notify('Not enough cash', 'error')
+    
+end)
