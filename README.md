@@ -1,5 +1,7 @@
 **For QB-Core**
 
+I will be upgrading this resource overtime, this was just a quick put together for fun.
+
 # Stands
 Makes all hotdog and hamburger stands available and adds a qb-target based system for instant buy. Easy to customize. 
 
